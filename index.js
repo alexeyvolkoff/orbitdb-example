@@ -10,6 +10,7 @@ import { createLibp2p } from 'libp2p'
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { webSockets } from '@libp2p/websockets'
 import { bootstrap } from '@libp2p/bootstrap'
+import { kadDHT, removePrivateAddressesMapper } from '@libp2p/kad-dht'
 import * as filters from '@libp2p/websockets/filters'
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2'
 import { createOrbitDB, IPFSAccessController } from '@orbitdb/core'
@@ -31,8 +32,8 @@ const main = async () => {
             })
         ],
         addresses: {
-            listen: ['/ip4/0.0.0.0/tcp/0',
-                     '/ip4/0.0.0.0/tcp/0/ws',
+            listen: ['/ip4/0.0.0.0/tcp/3303',
+                     '/ip4/0.0.0.0/tcp/3304/ws',
             ]
         },
         transports: [
@@ -45,12 +46,15 @@ const main = async () => {
         streamMuxers: [yamux()],
         services: {
             identify: identify(),
-            pubsub: gossipsub({ allowPublishToZeroPeers: true })
+            pubsub: gossipsub({ allowPublishToZeroPeers: true }),
+            aminoDHT: kadDHT({
+                protocol: '/ipfs/kad/1.0.0',
+                peerInfoMapper: removePrivateAddressesMapper
+            })
         }
     }
 
     const libp2p = await createLibp2p(Libp2pOptions)
-
 
     libp2p.addEventListener('peer:discovery', (evt) => {
         console.log('Discovered %s', evt.detail.id.toString()) // Log discovered peer
@@ -62,13 +66,9 @@ const main = async () => {
 
     const blockstore = new LevelBlockstore('./ipfs')
 
-    const ipfs = await createHelia({ libp2p })
+    const ipfs = await createHelia({ libp2p, blockstore })
 
-    // create a random directory to avoid OrbitDB conflicts.
-    let randDir = (Math.random() + 1).toString(36).substring(2)
-
-    const orbitdb = await createOrbitDB({ ipfs, directory: `./ipfs/${randDir}/orbitdb` })
-    //const orbitdb = await createOrbitDB({ ipfs, directory: './ipfs/orbitdb' })
+    const orbitdb = await createOrbitDB({ ipfs, directory: './ipfs/orbitdb' })
 
     let db
 
@@ -98,20 +98,22 @@ const main = async () => {
         await db.add('hello again from second peer')
     } else {
         // write some records
-        await db.add('hello from first peer')
-        await db.add('hello again from first peer')
+        //await db.add('hello from first peer')
+        //await db.add('hello again from first peer')
     }
     // Clean up when stopping this app using ctrl+c
     process.on('SIGINT', async () => {
         // print the final state of the db.
         console.log((await db.all()).map(e => e.value))
         // Close your db and stop OrbitDB and IPFS.
+        ipfs.blockstore.child.child.close()
         await db.close()
         await orbitdb.stop()
         await ipfs.stop()
 
         process.exit()
     })
+   console.log('Peer Id:', libp2p.peerId.toString());
 }
 
 main()

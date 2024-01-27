@@ -16,18 +16,16 @@ import * as filters from '@libp2p/websockets/filters'
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2'
 import { createOrbitDB, IPFSAccessController } from '@orbitdb/core'
 import { createHelia } from 'helia'
+import bootstrappers from './config/bootstrappers.js'
 
 const main = async () => {  
 
-    // Known peers addresses
-    const bootstrapMultiaddrs = ['/ip4/172.18.142.112/tcp/3303/p2p/12D3KooWHmzmcAx5UxC8ur8yBVEsh6LrMgeNvqhYcjRbGHaRMNzH',
-    ]
     const Libp2pOptions = {
         peerDiscovery: [
-            mdns(),
             bootstrap({
-                list: bootstrapMultiaddrs, // provide array of multiaddrs
-            })
+                list: bootstrappers, // provide array of multiaddrs
+            }),
+            mdns()
         ],
         addresses: {
             listen: ['/ip4/0.0.0.0/tcp/3303',
@@ -48,6 +46,12 @@ const main = async () => {
             dht: kadDHT({
                 kBucketSize: 20,
                 clientMode: false,
+                enabled: true,
+                randomWalk: {
+                    enabled: true,            // Allows to disable discovery (enabled by default)
+                    interval: 300e3,
+                    timeout: 10e3
+                }
             })
         }
     }
@@ -113,6 +117,8 @@ const main = async () => {
         process.exit()
     })
    console.log('Peer Id:', libp2p.peerId.toString());
+
+   await db.add('hello from: ' + libp2p.peerId.toString())
 
 }
 

@@ -11,6 +11,7 @@ import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { webSockets } from '@libp2p/websockets'
 import { bootstrap } from '@libp2p/bootstrap'
 import { kadDHT, removePrivateAddressesMapper } from '@libp2p/kad-dht'
+import { peerIdFromString } from '@libp2p/peer-id'
 import * as filters from '@libp2p/websockets/filters'
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2'
 import { createOrbitDB, IPFSAccessController } from '@orbitdb/core'
@@ -19,11 +20,8 @@ import { createHelia } from 'helia'
 const main = async () => {  
 
     // Known peers addresses
-    const bootstrapMultiaddrs = [
-        '/ip4/172.20.64.111/tcp/34617/p2p/12D3KooWPxFA6YEeo2nhExuHKjEBDUZojj8W76kbmipY5zb9tmV6',
-        '/ip4/172.20.64.111/tcp/37587/ws/p2p/12D3KooWPxFA6YEeo2nhExuHKjEBDUZojj8W76kbmipY5zb9tmV6',
+    const bootstrapMultiaddrs = ['/ip4/172.18.142.112/tcp/3303/p2p/12D3KooWHmzmcAx5UxC8ur8yBVEsh6LrMgeNvqhYcjRbGHaRMNzH',
     ]
-
     const Libp2pOptions = {
         peerDiscovery: [
             mdns(),
@@ -47,9 +45,9 @@ const main = async () => {
         services: {
             identify: identify(),
             pubsub: gossipsub({ allowPublishToZeroPeers: true }),
-            aminoDHT: kadDHT({
-                protocol: '/ipfs/kad/1.0.0',
-                peerInfoMapper: removePrivateAddressesMapper
+            dht: kadDHT({
+                kBucketSize: 20,
+                clientMode: false,
             })
         }
     }
@@ -74,6 +72,7 @@ const main = async () => {
 
     if (process.argv[2]) {
         db = await orbitdb.open(process.argv[2])
+
     } else {
         // When we open a new database, write access is only available to the
         // db creator. If we want to allow other peers to write to the database,
@@ -94,8 +93,8 @@ const main = async () => {
     })
 
     if (process.argv[2]) {
-        await db.add('hello from second peer')
-        await db.add('hello again from second peer')
+        //await db.add('hello from second peer')
+        //await db.add('hello again from second peer')
     } else {
         // write some records
         //await db.add('hello from first peer')
@@ -114,6 +113,7 @@ const main = async () => {
         process.exit()
     })
    console.log('Peer Id:', libp2p.peerId.toString());
+
 }
 
 main()

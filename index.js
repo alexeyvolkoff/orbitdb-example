@@ -1,19 +1,18 @@
 import { noise } from '@chainsafe/libp2p-noise'
 import { yamux } from '@chainsafe/libp2p-yamux'
-import { circuitRelayServer } from '@libp2p/circuit-relay-v2'
+import { createLibp2p } from 'libp2p'
 import { tcp } from '@libp2p/tcp'
 import { mdns } from '@libp2p/mdns'
-import { identify } from '@libp2p/identify'
 import { LevelBlockstore } from 'blockstore-level'
 import { mplex } from '@libp2p/mplex'
-import { createLibp2p } from 'libp2p'
+import { identify } from '@libp2p/identify'
+import { autoNAT } from '@libp2p/autonat';
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
+import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery'
 import { webSockets } from '@libp2p/websockets'
 import { bootstrap } from '@libp2p/bootstrap'
 import { kadDHT, removePrivateAddressesMapper } from '@libp2p/kad-dht'
-import { peerIdFromString } from '@libp2p/peer-id'
 import * as filters from '@libp2p/websockets/filters'
-import { circuitRelayTransport } from '@libp2p/circuit-relay-v2'
 import { createOrbitDB, IPFSAccessController } from '@orbitdb/core'
 import { createHelia } from 'helia'
 import bootstrappers from './config/bootstrappers.js'
@@ -25,6 +24,7 @@ const main = async () => {
             bootstrap({
                 list: bootstrappers, // provide array of multiaddrs
             }),
+            pubsubPeerDiscovery(),
             mdns()
         ],
         addresses: {
@@ -42,6 +42,7 @@ const main = async () => {
         streamMuxers: [yamux()],
         services: {
             identify: identify(),
+            autoNAT: autoNAT(),
             pubsub: gossipsub({ allowPublishToZeroPeers: true }),
             dht: kadDHT({
                 kBucketSize: 20,
@@ -88,7 +89,6 @@ const main = async () => {
 
         // Copy this output if you want to connect a peer to another.
         console.log('my-db address', '(copy my db address and use when launching peer 2)', db.address)
-        console.log('my-db peer address', libp2p.getMultiaddrs().toString());
     }
 
     db.events.on('update', async (entry) => {
@@ -109,17 +109,16 @@ const main = async () => {
         // print the final state of the db.
         console.log((await db.all()).map(e => e.value))
         // Close your db and stop OrbitDB and IPFS.
-        ipfs.blockstore.child.child.close()
         await db.close()
         await orbitdb.stop()
         await ipfs.stop()
 
         process.exit()
     })
-   console.log('Peer Id:', libp2p.peerId.toString());
 
-   await db.add('hello from: ' + libp2p.peerId.toString())
-
+    console.log('Peer Id:', libp2p.peerId.toString());
+    console.log('Peer address:', libp2p.getMultiaddrs().toString());
+    await db.add('hello from: ' + libp2p.peerId.toString())
 }
 
 main()

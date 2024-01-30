@@ -90,11 +90,11 @@ const main = async () => {
     const libp2p = await createLibp2p(Libp2pOptions)
 
     libp2p.addEventListener('peer:discovery', (evt) => {
-       // console.log('Discovered %s', evt.detail.id.toString()) // Log discovered peer
+        //console.log('Discovered %s', evt.detail.id.toString()) // Log discovered peer
     })
 
     libp2p.addEventListener('peer:connect', (evt) => {
-       // console.log('Connected to %s', evt.detail.toString()) // Log connected peer
+        //console.log('Connected to %s', evt.detail.toString()) // Log connected peer
     })
 
     const blockstore = new FsBlockstore('./data/ipfs')
@@ -152,11 +152,7 @@ const main = async () => {
 
     // add the bytes to your node and receive a unique content identifier
     const cid = await fs.addBytes(bytes) //bytes could be uploaded directly over REST API
-    console.log('Added file to IPFS:', cid.toString())
-
-    // note this CID because you will need it.
-    libp2p.services.dht.provide(cid)
-   
+    console.log('Added file to IPFS:', cid.toString())   
 }
 
 main()

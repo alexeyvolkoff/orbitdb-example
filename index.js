@@ -97,9 +97,9 @@ const main = async () => {
         //console.log('Connected to %s', evt.detail.toString()) // Log connected peer
     })
 
-    const blockstore = new FsBlockstore('./data/ipfs')
-    const ipfs = await createHelia({ libp2p: libp2p, blockstore: blockstore, datastore: leveldatastore })   
-    const fs = unixfs(ipfs)    
+    //const blockstore = new FsBlockstore('./data/ipfs')
+    const ipfs = await createHelia({ libp2p: libp2p,  datastore: leveldatastore })   
+    //const fs = unixfs(ipfs)    
     const orbitdb = await createOrbitDB({ ipfs, directory: './data/orbitdb' })
     let db
 
@@ -151,8 +151,8 @@ const main = async () => {
     const bytes = encoder.encode(randomText)
 
     // add the bytes to your node and receive a unique content identifier
-    const cid = await fs.addBytes(bytes) //bytes could be uploaded directly over REST API
-    console.log('Added file to IPFS:', cid.toString())   
+    //const cid = await fs.addBytes(bytes) //bytes could be uploaded directly over REST API
+    //console.log('Added file to IPFS:', cid.toString())   
 }
 
 main()

@@ -4,7 +4,7 @@ import { createLibp2p } from 'libp2p'
 import { tcp } from '@libp2p/tcp'
 import { mdns } from '@libp2p/mdns'
 import { Key } from 'interface-datastore'
-import { FsBlockstore } from 'blockstore-fs'
+import { LevelBlockstore } from 'blockstore-level'
 import { LevelDatastore } from 'datastore-level'
 import { mplex } from '@libp2p/mplex'
 import { identify } from '@libp2p/identify'
@@ -85,7 +85,6 @@ const main = async () => {
             })
         }
     }
-    process.setMaxListeners(200)
 
     const libp2p = await createLibp2p(Libp2pOptions)
 
@@ -97,8 +96,8 @@ const main = async () => {
         //console.log('Connected to %s', evt.detail.toString()) // Log connected peer
     })
 
-    //const blockstore = new FsBlockstore('./data/ipfs')
-    const ipfs = await createHelia({ libp2p: libp2p,  datastore: leveldatastore })   
+    const blockstore = new LevelBlockstore('./data/ipfs')
+    const ipfs = await createHelia({ libp2p: libp2p, blockstore: blockstore, datastore: leveldatastore })   
     //const fs = unixfs(ipfs)    
     const orbitdb = await createOrbitDB({ ipfs, directory: './data/orbitdb' })
     let db
@@ -147,8 +146,8 @@ const main = async () => {
     await db.put(libp2p.peerId.toString(), { peer: libp2p.peerId.toString(), text: randomText})
     
     //Put some file to IPFS
-    const encoder = new TextEncoder() //
-    const bytes = encoder.encode(randomText)
+    //const encoder = new TextEncoder() //
+    //const bytes = encoder.encode(randomText)
 
     // add the bytes to your node and receive a unique content identifier
     //const cid = await fs.addBytes(bytes) //bytes could be uploaded directly over REST API

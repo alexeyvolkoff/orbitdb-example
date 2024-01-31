@@ -1,6 +1,5 @@
 # OrbitDB example
-Demonstrates data replication between Helia nodes using OrbitDB key-value database. 
-Uses bootsrap for peer discovery, so at least one "seeding" node should run first to create database and print out its peerId. 
+Demonstrating data replication between Helia nodes using the OrbitDB key-value database. Utilizing bootstrap for peer discovery, it is essential for at least one "seeding" node to run first, creating the database and printing out its PeerId. 
 
 ### Prerequisites
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
@@ -19,7 +18,7 @@ Peer address: /ip4/127.0.0.1/tcp/3303/p2p/12D3KooWFcQahJpVawm8mTrmziPtu34xBWr45q
 Added file to IPFS: bafkreigt5s6r3cv6dzvbqvgzv5qadg7m55enlfrglqbgzk3gdgzonem6om
 ```
 
-On secondary nodes (on other machines in other networks) after installing dependencies with 'npm i', run the service with 'db address' parameter displayed on the seeding node:
+On secondary nodes (on other machines in different networks), after installing dependencies with 'npm i', launch the service using the 'db address' parameter displayed on the seeding node:
 
 ```console
 > npm i

@@ -1,5 +1,5 @@
 # OrbitDB example
-Demonstrating data replication between Helia nodes using the OrbitDB key-value database. Utilizing bootstrap for peer discovery, it is essential for at least one "seeding" node to run first, creating the database and printing out its PeerId. 
+This example illustrates data replication between Helia nodes complemented by the OrbitDB key-value database. Utilizing bootstrap for peer discovery, it is crucial for at least one "seeding" node to run first, creating the database and printing out its PeerId.
 
 ### Prerequisites
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.

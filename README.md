@@ -32,10 +32,8 @@ If replication hasn't already occurred (seeing as objects being printed out), th
 
 
 ## Replication
-When the node starts, it adds an object with some random data to the database. PeerId is used as the key (which could be any meaningful or calculated value). Additionally, for demonstration purposes, a random text file is added to the IPFS block store. Its CID is then passed to the remote peers as the 'cid' property of the object. Upon receiving an 'update' (replication) event, remote peers print out the object and retrieve the file from IPFS.
+When the node starts, it adds an object with some random data to the database. PeerId is used as the key (which could be any meaningful or calculated value). Additionally, for demonstration purposes, a random text file is added to the IPFS block store. Its CID is then passed to the remote peers as the 'cid' property of the object. Upon receiving an 'update' (replication) event, remote peers print out the object and retrieve the file from IPFS:
 
-
-When replication occurs, objects added to the database by the remote peers (as well as one's own object) are printed out to the console. Additionally, the file addressed by CID is retrieved from IPFS:
 
 ```console
 db updated: {

@@ -28,9 +28,21 @@ Peer Id: 12D3KooWFiiS6d91xgUJqryaiZZ5j8ty3i64MGSADf9MfesJiYqU
 Peer address: /ip4/127.0.0.1/tcp/3303/p2p/12D3KooWFiiS6d91xgUJqryaiZZ5j8ty3i64MGSADf9MfesJiYqU,/ip4/172.20.64.111/tcp/3303/p2p/12D3KooWFiiS6d91xgUJqryaiZZ5j8ty3i64MGSADf9MfesJiYqU,/ip4/127.0.0.1/tcp/3304/ws/p2p/12D3KooWFiiS6d91xgUJqryaiZZ5j8ty3i64MGSADf9MfesJiYqU,/ip4/172.20.64.111/tcp/3304/ws/p2p/12D3KooWFiiS6d91xgUJqryaiZZ5j8ty3i64MGSADf9MfesJiYqU
 Added file to IPFS: bafkreiecbue6u4d5ohggj46fmw2qe7jzg234syvnva7xsp2yhbwps4zkt4
 ```
-If replication (resulting in the printing out of objects added to the database by connected peers) hasn't already occurred, then add the seeding peer's address (the one with a public IPv4 address) to the 'config/bootstrappers.js' list of the secondary node.
+If replication hasn't already occurred (seeing as objects being printed out), then add the seeding peer's address (the one with a public IPv4 address) to the 'config/bootstrappers.js' list of the secondary node.
 
 
 ## Replication
 When the node starts, it adds an object with some random data to the database. PeerId is used as the key (which could be any meaningful or calculated value). Additionally, for demonstration purposes, a random text file is added to the IPFS block store. Its CID is then passed to the remote peers as the 'cid' property of the object. Upon receiving an 'update' (replication) event, remote peers print out the object and retrieve the file from IPFS.
+
+
+When replication occurs, objects added to the database by the remote peers (as well as one's own object) are printed out to the console. Additionally, the file addressed by CID is retrieved from IPFS:
+
+```console
+db updated: {
+  peer: '12D3KooWFiiS6d91xgUJqryaiZZ5j8ty3i64MGSADf9MfesJiYqU',
+  text: 'Text Message:edyw8hmc04h',
+  cid: CID(bafkreies7woyues5pgxztclgpuxydxsuvewwfppm3ttu3kw4epbb6wlvoy)
+}
+Fetched file contents: Text Message:edyw8hmc04h
+```
 

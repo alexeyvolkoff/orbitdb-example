@@ -27,7 +27,6 @@
     "datastore-fs": "^9.1.7",
     "datastore-level": "^10.1.6",
     "helia": "^4.0.0",
-    "i": "^0.3.7",
     "interface-blockstore": "^5.2.9",
     "interface-datastore": "^8.2.10",
     "libp2p": "^1.2.1",
